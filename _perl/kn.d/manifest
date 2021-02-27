@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+
+## TODO add subcommand to 'gen' a new one
+
+## TODO add default command to just dump it
+
+__END__
+_mkmanifest () {
+  declare line IFS file="${1:-MANIFEST}"
+  while IFS= read -r line; do
+    line=${line#/}
+    line=${line/.\//}
+    [[ -z "${line}" ]] && continue
+    echo "${line}"
+  done <<< $(
+    find . ! -path '*/_*' -a \
+             -name 'README.md' \
+             -printf "%T@ %h\n" \
+    | sort -d) > "${file}"
+}
+
+

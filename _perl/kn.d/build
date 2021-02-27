@@ -1,0 +1,24 @@
+#!/usr/bin/perl
+use v5.10; use strict; use warnings;
+say 'Would build';
+
+__END__
+
+
+_build () {
+  local begin end
+  local -a pids
+  local -i count
+  begin=$(date +%s)
+  _mkmanifest
+  _render '.'
+  while read -r change node; do
+    _render "${node}" &
+    count+=1
+  done < ./MANIFEST
+  wait
+  end=$(date +%s)
+  _rss
+  echo "${GRAY}Rendered ${count} nodes in $((end-begin)) seconds.${RESET}"
+}
+

@@ -1,0 +1,152 @@
+#!/usr/bin/perl
+use v5.14;
+
+use Data::Dumper;
+$Data::Dumper::Indent = 1;
+sub Dump { print Dumper @_; }
+
+my ($action, %actions);
+
+# --------------------------- error handling --------------------------
+
+our %ERRORS = (
+  arg => 'Missing argument.'
+);
+
+sub _e { my $e = shift; printf "$ERRORS{$e}\n", @_; exit -1 }
+
+# ----------------------------- reserved -----------------------------
+
+sub confdir {
+  my $d;
+  if (my $xdg = $ENV{XDG_CONFIG_HOME}) {
+    $d = "$xdg/kn" and -d $d and return $d;
+  }
+  if (my $h = $ENV{HOME}) {
+    $d = "$h/.config/kn" and -d $d and return $d;
+    $d = "$h/.kn" and -d $d and return $d;
+  }
+}
+
+sub config {
+  my $arg = shift;
+  if ($arg eq 'dir') {
+    return confdir();
+  }
+  return 'would show config';
+}
+
+sub default_kn {
+  my $confdir = confdir();
+}
+
+my %reserved = (
+  age=>sub{$_ = shift || _e('arg'); say time()-(stat($_))[9]},
+  abs=>sub{$_ = shift || _e('arg'); tr,.,/,; say "$ENV{KN}/$_"},
+  datepath=>sub{unshift @_, 'date', '+%4Y/%m/%d'; exec @_},
+  dir=>sub{$_ = shift || _e('arg'); tr,.,/,; say $_},
+  pidup=>sub{$_ = shift || _e('arg'); exec 'kill', '-0', $_},
+  default=>sub{$_ = default_kn() and say $_},
+  config=>sub{$_ = config(@_) and say $_}
+);
+
+# --------------------------- builtin actions -------------------------
+
+my %builtins = (
+  edit=>sub{$_=shift; say $_;return; exec $ENV{EDITOR}||'vim', "$reserved{abs}/$_/README.md"}
+);
+
+# ------------------------- bash tab completion -----------------------
+
+# add full path key d to file name
+sub add_actions {
+  my $d = shift;
+  map {my $p=$_; s,^.*/,,; $actions{$_}=$p} 
+  grep {-x $_} glob "$d/*";
+}
+
+sub get_actions {
+  map {$actions{$_}=$builtins{$_}} keys %builtins;
+  if (my $h = $ENV{HOME}) { 
+    add_actions "$h/.kn/actions";
+    add_actions "$h/.config/kn/actions";
+  }
+  if (my $d = $ENV{XDG_CONFIG_HOME}) {
+    add_actions "$d/kn/actions";
+  }
+  if (my $d = $ENV{KN}) {
+    add_actions "$d/.kn/actions";
+  }
+  map {$actions{$_}=$reserved{$_}} keys %reserved;
+}
+
+sub complete_action {
+  $actions{pop @ARGV} and exit 0;
+  map {/^$ARGV[1]/ and say $_} keys %actions;
+  exit 0;
+}
+
+sub complete_env {
+  map {/^$ARGV[1]/ and say $_} keys %ENV;
+  exit 0;
+}
+
+sub complete_uri {
+  # TODO implement
+  say 'compuri';
+  exit 0;
+}
+
+if ($ENV{'COMP_LINE'}) {
+  get_actions();
+  $ARGV[1] =~ /^[A-Z0-9_]+$/ && complete_env();
+  $ARGV[1] =~ /\p{Lu}|\./ && complete_uri();
+  complete_action();
+}
+
+# -------------------------- normal execution -------------------------
+
+$action = shift;
+
+# just echo env variables
+if ($action =~ /^[A-Z0-9_]+$/) {
+  say $ENV{$action};
+  exit 0;
+}
+
+# pass YAML queries to yq
+my ($node, $query, $yml);
+if (($node, $query) = $action =~ /^([^\p{Lu}]+)?(\p{Lu}.+)/) {
+  if (!$node) {
+    $yml = "$ENV{'KN'}/data.yml";
+  } else {
+    $node =~ tr,.,/,;
+    $yml = "$ENV{'KN'}/$node/data.yml";
+  }
+  if (!-r $yml) {
+    say 'File not found: '. $yml;
+    exit -1;
+  }
+  exec 'yq', 'e', ".$query", $yml;
+}
+
+# handle reserved, custom, or builtin actions
+get_actions();
+my $a = $actions{$action};
+ref $a ? exit &$a(@ARGV) : exec($a, @ARGV);
+
+# assume default edit action
+$action && exec $actions{'edit'}, $action;
+
+__END__
+
+
+# TODO cleanup all the random documentation dumped in here from former
+# shell scripts.
+
+# -------------------------- old shell stuff -------------------------
+
+# Output the current date as a path in the YEAR/MONTH/DAY format for use
+# when creating content within a directory file structure that models
+# chronological data. Passes any arguments directly to `date -d` in
+# order to adjust the date from the default (current day).

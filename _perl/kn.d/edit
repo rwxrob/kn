@@ -1,0 +1,39 @@
+#!/bin/bash
+
+echo would edit "$@"
+exit
+# Opens the specified knowledge node for editing with preferred editor.
+# Resolves the editor to be used as follow:
+# 
+#    1. `$(kn Editor)`
+#    2. `$EDITOR`
+#    3. `vim`
+#
+# By defualt the README.md file is opened for editing. However, if node
+# name contains any upper-case letter after a dot then action will
+# search through all files ending with .yml suffix for location of data
+# node and if not found will then prompt with options to edit any of
+# *.yml files if they exist, or to create a new file to contain the
+# value (data.yml by default).
+
+edit() {
+  local node="$1"
+
+  if [[ -z "${node}" ]];then
+    kn _error missing_argument node
+    return -1
+  fi
+
+  # FIXME change this to be unicode aware of upper (not just ascii)
+  if [[ "${node}" =~ \.[A-Z] ]]; then
+    kn _error unsupported "data node editing"
+    return -1
+  fi
+
+  # TODO resolve node to file
+  #local editor=$(kn Editor)
+  #[[ -z "${editor}" ]] || editor="${EDITOR:-vim}"
+  echo "$editor" "${file}"
+}
+
+edit "$@"
