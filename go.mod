@@ -10,5 +10,3 @@ require (
 	github.com/rwxrob/conf-go v0.4.2
 	github.com/yuin/goldmark v1.3.2
 )
-
-replace github.com/rwxrob/cmdtab-pomo => /home/rwxrob/repos/github.com/rwxrob/cmdtab-pomo
