@@ -4,10 +4,14 @@ github.com/litao91/goldmark-mathjax v0.0.0-20210217064022-a43cf739a50f/go.mod h1
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rwxrob/cmdtab v0.4.0 h1:bYePmvIhF95Whv/1qA9ucLxDLXq+coC0T7qsZzKtIs8=
 github.com/rwxrob/cmdtab v0.4.0/go.mod h1:TWGCTFAm9NlO9mR6aUB5dltAhcVK1FTiCzF7WLXwGgQ=
+github.com/rwxrob/cmdtab v0.5.0 h1:WrzKLQDyoXk+jIHUjIY2u59tBzcbYXAbqOeynXLnGiA=
+github.com/rwxrob/cmdtab v0.5.0/go.mod h1:TWGCTFAm9NlO9mR6aUB5dltAhcVK1FTiCzF7WLXwGgQ=
 github.com/rwxrob/cmdtab-config v1.0.0 h1:cjyIx6OZ5B8fcoh+3TitNRWpjofBChtIgLUWWMO3UME=
 github.com/rwxrob/cmdtab-config v1.0.0/go.mod h1:IkvUxALvbGl0YEmgwriURc4X1HzY1uoEntzcEty+hug=
 github.com/rwxrob/cmdtab-pomo v0.1.0 h1:WVkIIqRWEkua0avIFQfavD826E05zaEmpSSuU1suJwA=
 github.com/rwxrob/cmdtab-pomo v0.1.0/go.mod h1:WeSli93LMBuaNj//h2BguRjAEJ/wk6KHSQWGgKi5boY=
+github.com/rwxrob/cmdtab-pomo v0.2.0 h1:vKajo44F0nlBGXGEt4k6AS7aq41Kuf5xKO6iI70TxLI=
+github.com/rwxrob/cmdtab-pomo v0.2.0/go.mod h1:QFmVcAKmcBb3ONAgQAQLrOJFPvN2UKjFz4MIvkdijqI=
 github.com/rwxrob/conf-go v0.4.2 h1:pqnYEG9eyndr6umc/U2Az87CeWTh/CanCMVBT0m8nJA=
 github.com/rwxrob/conf-go v0.4.2/go.mod h1:DCol+uEzZiZKaerRsEnpUH+T5WrTODBDcrY3a/S+1jA=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
